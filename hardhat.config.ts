@@ -1,6 +1,5 @@
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox-mocha-ethers";
-
 import { defineConfig, configVariable } from "hardhat/config";
 
 export default defineConfig({
