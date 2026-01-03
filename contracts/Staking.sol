@@ -15,6 +15,13 @@ contract Staking is ReentrancyGuard, Ownable {
 
     uint256 public totalStaked;
 
+    uint256 public rewardRate;
+    uint256 public lastUpdateTime;
+    uint256 public rewardPerTokenStored;
+
+    mapping(address => uint256) public userRewardPerTokenPaid;
+    mapping(address => uint256) public rewards;
+
     mapping(address => uint256) public balances;
 
     event Staked(address indexed user, uint256 amount);
