@@ -100,4 +100,16 @@ contract Staking is ReentrancyGuard, Ownable {
 
         emit Withdrawn(msg.sender, amount);
     }
+
+    function claimReward() external nonReentrant updateReward(msg.sender) {
+        uint256 reward = rewards[msg.sender];
+        require(reward > 0, "No rewards");
+
+        rewards[msg.sender] = 0;
+
+        bool ok = rewardToken.transfer(msg.sender, reward);
+        require(ok, "Reward transfer failed");
+
+        emit RewardPaid(msg.sender, reward);
+    }
 }
