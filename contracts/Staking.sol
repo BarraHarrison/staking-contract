@@ -38,6 +38,18 @@ contract Staking is ReentrancyGuard, Ownable {
         lastUpdateTime = block.timestamp;
     }
 
+    function rewardPerToken() public view returns (uint256) {
+        if (totalStaked == 0) {
+            return rewardPerTokenStored;
+        }
+
+        return
+            rewardPerTokenStored +
+            ((block.timestamp - lastUpdateTime) * rewardRate * 1e18) /
+            totalStaked;
+    }
+
+
     /**
      * @notice Stake ERC20 tokens
      */
