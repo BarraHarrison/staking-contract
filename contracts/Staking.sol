@@ -29,10 +29,13 @@ contract Staking is ReentrancyGuard, Ownable {
 
     constructor(
         address _stakeToken,
-        address _rewardToken
+        address _rewardToken,
+        uint256 _rewardRate
     ) Ownable(msg.sender) {
         stakeToken = IERC20(_stakeToken);
         rewardToken = IERC20(_rewardToken);
+        rewardRate = _rewardRate;
+        lastUpdateTime = block.timestamp;
     }
 
     /**
