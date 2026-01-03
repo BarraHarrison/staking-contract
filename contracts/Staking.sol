@@ -75,7 +75,7 @@ contract Staking is ReentrancyGuard, Ownable {
     /**
      * @notice Stake ERC20 tokens
      */
-    function stake(uint256 amount) external nonReentrant {
+    function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot stake zero");
 
         totalStaked += amount;
@@ -89,7 +89,7 @@ contract Staking is ReentrancyGuard, Ownable {
     /**
      * @notice Withdraw staked tokens
      */
-    function withdraw(uint256 amount) external nonReentrant {
+    function withdraw(uint256 amount) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot withdraw zero");
         require(balances[msg.sender] >= amount, "Insufficient balance");
 
