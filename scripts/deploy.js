@@ -1,0 +1,52 @@
+import { ethers } from "hardhat";
+
+async function main() {
+    const [deployer] = await ethers.getSigners();
+
+    console.log("Deploying contracts with account:", deployer.address);
+    console.log("Deployer balance:", (await deployer.getBalance()).toString());
+
+    const StakeToken = await ethers.getContractFactory("StakeToken");
+    const stakeToken = await StakeToken.deploy(
+        ethers.parseEther("1000000")
+    );
+    await stakeToken.waitForDeployment();
+
+    const stakeTokenAddress = await stakeToken.getAddress();
+    console.log("StakeToken deployed to:", stakeTokenAddress);
+
+    const RewardToken = await ethers.getContractFactory("RewardToken");
+    const rewardToken = await RewardToken.deploy();
+    await rewardToken.waitForDeployment();
+
+    const rewardTokenAddress = await rewardToken.getAddress();
+    console.log("RewardToken deployed to:", rewardTokenAddress);
+
+    const rewardRate = ethers.parseEther("1");
+
+    const Staking = await ethers.getContractFactory("Staking");
+    const staking = await Staking.deploy(
+        stakeTokenAddress,
+        rewardTokenAddress,
+        rewardRate
+    );
+    await staking.waitForDeployment();
+
+    const stakingAddress = await staking.getAddress();
+    console.log("Staking contract deployed to:", stakingAddress);
+
+    const rewardFundingAmount = ethers.parseEther("100000");
+
+    const mintTx = await rewardToken.mint(
+        stakingAddress,
+        rewardFundingAmount
+    );
+    await mintTx.wait();
+
+    console.log("Staking contract funded with rewards");
+}
+
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+});
