@@ -49,6 +49,14 @@ contract Staking is ReentrancyGuard, Ownable {
             totalStaked;
     }
 
+    function earned(address account) public view returns (uint256) {
+        return
+            ((balances[account] *
+                (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) +
+            rewards[account];
+    }
+
+
 
     /**
      * @notice Stake ERC20 tokens
