@@ -13,14 +13,14 @@ async function main() {
     );
     await stakeToken.deployed();
 
-    const stakeTokenAddress = await stakeToken.address();
+    const stakeTokenAddress = await stakeToken.address
     console.log("StakeToken deployed to:", stakeTokenAddress);
 
     const RewardToken = await ethers.getContractFactory("RewardToken");
     const rewardToken = await RewardToken.deploy();
     await rewardToken.deployed();
 
-    const rewardTokenAddress = await rewardToken.address();
+    const rewardTokenAddress = await rewardToken.address
     console.log("RewardToken deployed to:", rewardTokenAddress);
 
     const rewardRate = ethers.utils.parseEther("1");
@@ -33,7 +33,7 @@ async function main() {
     );
     await staking.deployed();
 
-    const stakingAddress = await staking.address();
+    const stakingAddress = await staking.address
     console.log("Staking contract deployed to:", stakingAddress);
 
     const rewardFundingAmount = ethers.utils.parseEther("100000");
