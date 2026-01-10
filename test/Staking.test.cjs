@@ -112,16 +112,25 @@ describe("Staking contract", function () {
     });
 
     it("reverts on invalid staking and reward actions", async function () {
-        await expect(
-            staking.connect(user).stake(0)
-        ).to.be.rejected;
+        try {
+            await staking.connect(user).stake(0);
+            expect.fail("Expected stake(0) to revert");
+        } catch (err) {
+            expect(err.message).to.include("Cannot stake zero");
+        }
 
-        await expect(
-            staking.connect(user).withdraw(ethers.utils.parseEther("1"))
-        ).to.be.rejected;
+        try {
+            await staking.connect(user).withdraw(ethers.utils.parseEther("1"));
+            expect.fail("Expected withdraw to revert");
+        } catch (err) {
+            expect(err.message).to.include("Insufficient balance");
+        }
 
-        await expect(
-            staking.connect(user).claimReward()
-        ).to.be.rejected;
+        try {
+            await staking.connect(user).claimReward();
+            expect.fail("Expected claimReward to revert");
+        } catch (err) {
+            expect(err.message).to.include("No rewards");
+        }
     });
 });
