@@ -51,6 +51,6 @@ describe("Staking contract", function () {
         expect(rewardBalance.gt(0)).to.equal(true);
 
         const remainingRewards = await staking.earned(user.address);
-        expect(remainingRewards).to.equal(0);
+        expect(remainingRewards).to.equal(ethers.constants.Zero);
     });
 });
