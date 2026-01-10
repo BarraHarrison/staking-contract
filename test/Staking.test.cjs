@@ -110,4 +110,19 @@ describe("Staking contract", function () {
 
         expect(rewardA.gt(rewardB)).to.equal(true);
     });
+
+    it("reverts on invalid staking and reward actions", async function () {
+        await expect(
+            staking.connect(user).stake(0)
+        ).to.be.revertedWith("Cannot stake zero");
+
+        await expect(
+            staking.connect(user).withdraw(ethers.utils.parseEther("1"))
+        ).to.be.revertedWith("Insufficient balance");
+
+        await expect(
+            staking.connect(user).claimReward()
+        ).to.be.revertedWith("No rewards");
+    });
+
 });
