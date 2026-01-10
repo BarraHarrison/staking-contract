@@ -53,4 +53,30 @@ describe("Staking contract", function () {
         const remainingRewards = await staking.earned(user.address);
         expect(remainingRewards.isZero()).to.equal(true);
     });
+
+
+    it("allows partial withdrawal while keeping correct rewards", async function () {
+        await stakeToken.connect(user).approve(staking.address, STAKE_AMOUNT);
+        await staking.connect(user).stake(STAKE_AMOUNT);
+
+        await ethers.provider.send("evm_increaseTime", [10]);
+        await ethers.provider.send("evm_mine");
+
+        const withdrawAmount = STAKE_AMOUNT.div(2);
+        await staking.connect(user).withdraw(withdrawAmount);
+
+        await ethers.provider.send("evm_increaseTime", [10]);
+        await ethers.provider.send("evm_mine");
+        await staking.connect(user).claimReward();
+
+        const rewardBalance = await rewardToken.balanceOf(user.address);
+        expect(rewardBalance.gt(0)).to.equal(true);
+
+        const remainingStake = await staking.balances(user.address);
+        expect(remainingStake.eq(STAKE_AMOUNT.sub(withdrawAmount))).to.equal(true);
+
+        const remainingRewards = await staking.earned(user.address);
+        expect(remainingRewards.isZero()).to.equal(true);
+    });
+
 });
