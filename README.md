@@ -1,57 +1,111 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+# ERC20 Staking Contract (Yield Farming Mini-Project)
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+This project is a fully tested ERC-20 staking protocol built as part of **Week 10 (DeFi / NFT Mechanics)** of my blockchain study roadmap. It demonstrates how users can stake one ERC-20 token and earn rewards in a separate ERC-20 token using time-based yield farming logic.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+The focus of this project is **correct reward accounting**, **fair yield distribution**, and **protocol safety**, rather than UI or frontend integration.
 
-## Project Overview
+---
 
-This example project includes:
+## 📌 Project Overview
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+Users can:
 
-## Usage
+* Stake an ERC-20 token (**StakeToken**)
+* Earn rewards in a different ERC-20 token (**RewardToken**)
+* Withdraw part or all of their stake at any time
+* Claim rewards accrued over time
+* Participate fairly alongside other stakers
 
-### Running Tests
+Rewards are distributed **proportionally and time-weighted**, ensuring early stakers earn more and late stakers do not dilute past rewards.
 
-To run all the tests in the project, execute the following command:
+---
 
-```shell
-npx hardhat test
-```
+## 🧱 Architecture
 
-You can also selectively run the Solidity or `mocha` tests:
+### Contracts
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+* **StakeToken.sol**
+  ERC-20 token used for staking. Represents the asset being locked in the protocol.
 
-### Make a deployment to Sepolia
+* **RewardToken.sol**
+  ERC-20 token used for rewards. Minted and funded into the staking contract.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+* **Staking.sol**
+  Core staking logic. Tracks balances, rewards, and global accounting. Uses OpenZeppelin’s `ReentrancyGuard` and `Ownable`.
 
-To run the deployment to a local chain:
+---
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+## ⚙️ Reward Mechanics (High-Level)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
+* Rewards are emitted at a constant `rewardRate` (tokens per second)
+* A global `rewardPerToken` value tracks accumulated rewards
+* Each user stores a snapshot of rewards already accounted for
+* Rewards are calculated lazily on interaction (`stake`, `withdraw`, `claim`)
 
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
+This design:
 
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
+* Avoids loops
+* Scales to many users
+* Mirrors real DeFi staking protocols
 
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
+---
 
-After setting the variable, you can run the deployment with the Sepolia network:
+## 🔐 Safety Features
 
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+* Reentrancy protection on all state-changing functions
+* Zero-value staking prevented
+* Over-withdrawals blocked
+* Reward claims without accrued rewards reverted
+* Defensive accounting using an `updateReward` modifier
+
+---
+
+## 🧪 Test Coverage
+
+The protocol is fully tested using **Hardhat + Mocha + Chai**.
+
+### Implemented Tests
+
+* Stake → wait → claim rewards
+* Partial withdrawal without losing accrued rewards
+* Multiple stakers with fair yield splitting
+* Edge-case protection (invalid actions revert safely)
+
+All tests pass and validate both **core logic** and **failure paths**, ensuring protocol correctness.
+
+---
+
+## 🧠 Key Learning Outcomes
+
+* ERC-20 staking design patterns
+* Yield farming and reward distribution logic
+* Time-weighted reward accounting
+* Multi-user fairness in DeFi protocols
+* Writing robust smart-contract tests
+* Safe handling of BigNumbers in JavaScript
+
+---
+
+## 🚀 Possible Extensions
+
+* NFT-based reward multipliers (boosted staking)
+* Adjustable reward rates
+* Emergency withdraw mechanism
+* Frontend dashboard (React + ethers.js)
+* Deployment to a public testnet (e.g. Sepolia)
+
+---
+
+## 🛠️ Tech Stack
+
+* Solidity ^0.8.x
+* Hardhat (v2)
+* ethers.js (v5)
+* OpenZeppelin Contracts
+* Mocha / Chai
+
+---
+
+## 📄 License
+
+MIT
