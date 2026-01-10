@@ -43,12 +43,12 @@ describe("Staking contract", function () {
         await ethers.provider.send("evm_mine");
 
         const earned = await staking.earned(user.address);
-        expect(earned).to.be.gt(0);
+        expect(earned.gt(0)).to.equal(true);
 
         await staking.connect(user).claimReward();
 
         const rewardBalance = await rewardToken.balanceOf(user.address);
-        expect(rewardBalance).to.be.gt(0);
+        expect(rewardBalance.gt(0)).to.equal(true);
 
         const remainingRewards = await staking.earned(user.address);
         expect(remainingRewards).to.equal(0);
