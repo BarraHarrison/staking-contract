@@ -79,4 +79,35 @@ describe("Staking contract", function () {
         expect(remainingRewards.isZero()).to.equal(true);
     });
 
+    it("splits rewards correctly between multiple stakers", async function () {
+        const [, userA, userB] = await ethers.getSigners();
+
+        const stakeA = ethers.utils.parseEther("100");
+        const stakeB = ethers.utils.parseEther("100");
+
+        await stakeToken.transfer(userA.address, stakeA);
+        await stakeToken.transfer(userB.address, stakeB);
+
+        await stakeToken.connect(userA).approve(staking.address, stakeA);
+        await stakeToken.connect(userB).approve(staking.address, stakeB);
+
+        await staking.connect(userA).stake(stakeA);
+        await ethers.provider.send("evm_increaseTime", [10]);
+        await ethers.provider.send("evm_mine");
+
+        await staking.connect(userB).stake(stakeB);
+        await ethers.provider.send("evm_increaseTime", [10]);
+        await ethers.provider.send("evm_mine");
+
+        await staking.connect(userA).claimReward();
+        await staking.connect(userB).claimReward();
+
+        const rewardA = await rewardToken.balanceOf(userA.address);
+        const rewardB = await rewardToken.balanceOf(userB.address);
+
+        expect(rewardA.gt(0)).to.equal(true);
+        expect(rewardB.gt(0)).to.equal(true);
+
+        expect(rewardA.gt(rewardB)).to.equal(true);
+    });
 });
